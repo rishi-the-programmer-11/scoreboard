@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Live Scoreboard</title>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+</head>
+<body>
+
+<h1>Live Score Board</h1>
+
+<h2>Person 1: <span id="p1">0</span></h2>
+<button onclick="updateScore('person1',10)">+10</button>
+<button onclick="updateScore('person1',-10)">-10</button>
+
+<h2>Person 2: <span id="p2">0</span></h2>
+<button onclick="updateScore('person2',10)">+10</button>
+<button onclick="updateScore('person2',-10)">-10</button>
+
+<script>
+
+var firebaseConfig = {
+  apiKey: "AIzaSyB-pcntG7bT9sm24R0FYiptGai7aBCt7HE",
+  authDomain: "live-broard.firebaseapp.com",
+  databaseURL: "https://live-broard-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "live-broard",
+  storageBucket: "live-broard.firebasestorage.app",
+  messagingSenderId: "956089311577",
+  appId: "1:956089311577:web:8e5a80cd4f56de6f32ec48"
+};
+
+firebase.initializeApp(firebaseConfig);
+var database = firebase.database();
+
+function updateScore(person, value) {
+  database.ref(person).once("value").then(function(snapshot) {
+    var current = snapshot.val() || 0;
+    database.ref(person).set(current + value);
+  });
+}
+
+database.ref("person1").on("value", function(snapshot) {
+  document.getElementById("p1").innerText = snapshot.val();
+});
+
+database.ref("person2").on("value", function(snapshot) {
+  document.getElementById("p2").innerText = snapshot.val();
+});
+
+</script>
+
+</body>
+</html>
