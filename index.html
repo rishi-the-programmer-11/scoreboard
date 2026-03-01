@@ -1,15 +1,92 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Live Scoreboard</title>
+  <title>Dojo Points</title>
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: linear-gradient(to right, #141e30, #243b55);
+      color: white;
+      text-align: center;
+      margin: 0;
+      padding: 0;
+    }
+
+    h1 {
+      padding: 20px;
+      font-size: 40px;
+      letter-spacing: 2px;
+    }
+
+    .container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+      padding: 20px;
+      max-width: 1000px;
+      margin: auto;
+    }
+
+    .player-card {
+      background: #1e2a38;
+      padding: 20px;
+      border-radius: 15px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.5);
+      transition: transform 0.2s;
+    }
+
+    .player-card:hover {
+      transform: scale(1.05);
+    }
+
+    .name {
+      font-size: 24px;
+      margin-bottom: 10px;
+    }
+
+    .score {
+      font-size: 50px;
+      font-weight: bold;
+      margin-bottom: 15px;
+    }
+
+    button {
+      padding: 10px 15px;
+      margin: 5px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .add {
+      background: #28a745;
+      color: white;
+    }
+
+    .add:hover {
+      background: #218838;
+    }
+
+    .minus {
+      background: #dc3545;
+      color: white;
+    }
+
+    .minus:hover {
+      background: #c82333;
+    }
+  </style>
 </head>
 <body>
 
-<h1>Live Score Board</h1>
+<h1>🏆 LIVE SCOREBOARD</h1>
 
-<div id="players"></div>
+<div class="container" id="players"></div>
 
 <script>
 
@@ -29,24 +106,23 @@ var database = firebase.database();
 function createPlayerUI(playerNumber) {
 
   var container = document.createElement("div");
+  container.className = "player-card";
+
   container.innerHTML = `
-    <h2 id="name${playerNumber}">Player ${playerNumber}</h2>
-    <h3>Score: <span id="score${playerNumber}">0</span></h3>
-    <button onclick="updateScore(${playerNumber},10)">+10</button>
-    <button onclick="updateScore(${playerNumber},-10)">-10</button>
-    <hr>
+    <div class="name" id="name${playerNumber}">Player ${playerNumber}</div>
+    <div class="score" id="score${playerNumber}">0</div>
+    <button class="add" onclick="updateScore(${playerNumber},10)">+10</button>
+    <button class="minus" onclick="updateScore(${playerNumber},-10)">-10</button>
   `;
 
   document.getElementById("players").appendChild(container);
 
-  // Listen for name changes
   database.ref("players/" + playerNumber + "/name")
     .on("value", function(snapshot) {
       document.getElementById("name" + playerNumber)
         .innerText = snapshot.val();
     });
 
-  // Listen for score changes
   database.ref("players/" + playerNumber + "/score")
     .on("value", function(snapshot) {
       document.getElementById("score" + playerNumber)
@@ -63,7 +139,6 @@ function updateScore(playerNumber, value) {
   });
 }
 
-// Create 4 players automatically
 createPlayerUI(1);
 createPlayerUI(2);
 createPlayerUI(3);
