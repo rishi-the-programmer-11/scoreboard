@@ -109,10 +109,22 @@ function createPlayerUI(playerNumber) {
   container.className = "player-card";
 
   container.innerHTML = `
-    <div class="name" id="name${playerNumber}">Player ${playerNumber}</div>
+    <div class="name" id="name${playerNumber}">Warrior ${playerNumber}</div>
     <div class="score" id="score${playerNumber}">0</div>
-    <button class="add" onclick="updateScore(${playerNumber},10)">+10</button>
-    <button class="minus" onclick="updateScore(${playerNumber},-10)">-10</button>
+
+    <div>
+      <button class="add" onclick="updateScore(${playerNumber},1)">+1</button>
+      <button class="add" onclick="updateScore(${playerNumber},5)">+5</button>
+      <button class="add" onclick="updateScore(${playerNumber},10)">+10</button>
+      <button class="add" onclick="updateScore(${playerNumber},50)">+50</button>
+    </div>
+
+    <div>
+      <button class="minus" onclick="updateScore(${playerNumber},-1)">-1</button>
+      <button class="minus" onclick="updateScore(${playerNumber},-5)">-5</button>
+      <button class="minus" onclick="updateScore(${playerNumber},-10)">-10</button>
+      <button class="minus" onclick="updateScore(${playerNumber},-50)">-50</button>
+    </div>
   `;
 
   document.getElementById("players").appendChild(container);
