@@ -125,27 +125,41 @@ var firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 var db = firebase.database();
 
+var currentMode = localStorage.getItem("mode") || "view";
+
 // 🔐 PINS
 var browniePIN = "1111";
 var goldenPIN = "2222";
 var adminPIN = "9999";
 
-var currentMode = localStorage.getItem("mode") || "view";
+
 
 // 🚪 LOGIN
 function unlock() {
   var entered = document.getElementById("pin").value.trim();
 
+  console.log("Entered PIN:", entered); // 👈 debug
+
   if (entered === adminPIN) {
     currentMode = "admin";
-  } else if (entered === browniePIN) {
+  } 
+  else if (entered === browniePIN) {
     currentMode = "brownie";
-  } else if (entered === goldenPIN) {
+  } 
+  else if (entered === goldenPIN) {
     currentMode = "golden";
-  } else {
+  } 
+  else {
     alert("Wrong PIN ❌");
     return;
   }
+
+  console.log("Mode set to:", currentMode); // 👈 debug
+
+  localStorage.setItem("mode", currentMode);
+
+  startApp();
+}
 
   // ✅ SAVE MODE
   localStorage.setItem("mode", currentMode);
@@ -157,7 +171,6 @@ function viewOnly() {
   currentMode = "view";
   localStorage.setItem("mode", currentMode);
   startApp();
-
 }
 
 // 🚀 START APP
@@ -250,6 +263,11 @@ function initPlayers() {
 
   createPlayer(3, "golden");
   createPlayer(4, "golden");
+
+  // 🔁 Auto start if already unlocked
+if (currentMode !== "view") {
+  startApp();
+}
 }
 </script>
 
