@@ -12,13 +12,52 @@
       background: linear-gradient(to right, #141e30, #243b55);
       color: white;
       text-align: center;
+      margin: 0;
     }
 
-    h1 { font-size: 40px; }
+    h1 { margin-top: 20px; }
+
+    /* 🔐 PIN SCREEN */
+    #loginScreen {
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .login-box {
+      background: #1e2a38;
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    }
+
+    input {
+      padding: 10px;
+      margin: 10px;
+      border-radius: 8px;
+      border: none;
+    }
+
+    button {
+      padding: 10px 15px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      margin: 5px;
+    }
+
+    .enter { background: #28a745; color: white; }
+    .view { background: gray; color: white; }
+
+    /* 🏆 SCOREBOARD */
+    #app {
+      display: none;
+    }
 
     .team-title {
-      margin-top: 30px;
-      font-size: 26px;
+      margin-top: 25px;
+      font-size: 24px;
     }
 
     .container {
@@ -45,184 +84,89 @@
 
     .score { font-size: 40px; }
 
-    button {
+    .controls button {
       padding: 6px;
       margin: 3px;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
     }
 
     .add { background: green; color: white; }
     .minus { background: red; color: white; }
 
-    #login {
-      margin: 20px;
-    }
   </style>
 </head>
 
 <body>
 
-<h1>🏆 DOJO SCOREBOARD</h1>
-
-<div id="login">
-  <input type="password" id="pin" placeholder="Enter Team PIN">
-  <button onclick="unlock()">Unlock</button>
-  <button onclick="viewMode()">View Only</button>
+<!-- 🔐 LOGIN SCREEN -->
+<div id="loginScreen">
+  <div class="login-box">
+    <h2>Enter PIN</h2>
+    <input type="password" id="pin" placeholder="Enter PIN"><br>
+    <button class="enter" onclick="unlock()">Enter</button>
+    <button class="view" onclick="viewOnly()">View Only</button>
+  </div>
 </div>
 
-<h2 class="team-title">🍫 Brownie Rainbow Sprinkle Dojo Points</h2>
-<div class="container" id="brownieTeam"></div>
+<!-- 🏆 APP -->
+<div id="app">
 
-<h2 class="team-title">⭐ Golden Glitter Star</h2>
-<div class="container" id="goldenTeam"></div>
+  <h1>🏆 DOJO SCOREBOARD</h1>
+
+  <h2 class="team-title">🍫 Brownie Rainbow Sprinkle Dojo Points</h2>
+  <div class="container" id="brownieTeam"></div>
+
+  <h2 class="team-title">⭐ Golden Glitter Star</h2>
+  <div class="container" id="goldenTeam"></div>
+
+</div>
 
 <script>
+// 🔥 Firebase
 var firebaseConfig = {
-  apiKey: "YOUR_KEY",
-  authDomain: "YOUR_PROJECT.firebaseapp.com",
-  databaseURL: "YOUR_DB_URL"
+  apiKey: "AIzaSyB-pcntG7bT9sm24R0FYiptGai7aBCt7HE",
+  authDomain: "live-broard.firebaseapp.com",
+  databaseURL: "https://live-broard-default-rtdb.asia-southeast1.firebasedatabase.app"
 };
 
 firebase.initializeApp(firebaseConfig);
 var db = firebase.database();
 
-// 🔐 Team PINS
-var browniePIN = "1234";
-var goldenPIN = "2020";
-  <!DOCTYPE html>
-<html>
-<head>
-  <title>Dojo Points</title>
-
-  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
-
-  <style>
-    body {
-      font-family: Arial;
-      background: linear-gradient(to right, #141e30, #243b55);
-      color: white;
-      text-align: center;
-    }
-
-    h1 { font-size: 40px; }
-
-    .team-title {
-      margin-top: 30px;
-      font-size: 26px;
-    }
-
-    .container {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 15px;
-      max-width: 900px;
-      margin: auto;
-    }
-
-    .player-card {
-      padding: 15px;
-      border-radius: 15px;
-    }
-
-    .brownie {
-      background: linear-gradient(135deg, #5a3e2b, #8b5e3c);
-    }
-
-    .golden {
-      background: linear-gradient(135deg, #ffd700, #d4af37);
-      color: black;
-    }
-
-    .score { font-size: 40px; }
-
-    button {
-      padding: 6px;
-      margin: 3px;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-    }
-
-    .add { background: green; color: white; }
-    .minus { background: red; color: white; }
-
-    #login {
-      margin: 20px;
-    }
-  </style>
-</head>
-
-<body>
-
-<h1>🏆 DOJO SCOREBOARD</h1>
-
-<div id="login">
-  <input type="password" id="pin" placeholder="Enter Team PIN">
-  <button onclick="unlock()">Unlock</button>
-  <button onclick="viewMode()">View Only</button>
-</div>
-
-<h2 class="team-title">🍫 Brownie Rainbow Sprinkle Dojo Points</h2>
-<div class="container" id="brownieTeam"></div>
-
-<h2 class="team-title">⭐ Golden Glitter Star</h2>
-<div class="container" id="goldenTeam"></div>
-
-<script>
-var firebaseConfig = {
-  apiKey: "YOUR_KEY",
-  authDomain: "YOUR_PROJECT.firebaseapp.com",
-  databaseURL: "YOUR_DB_URL"
-};
-
-firebase.initializeApp(firebaseConfig);
-var db = firebase.database();
-
-// 🔐 Team PINS
+// 🔐 PINS
 var browniePIN = "1111";
 var goldenPIN = "2222";
-var adminPIN = "1111"; 
+var adminPIN = "9999";
 
-var currentTeam = "view"; // default
+var currentMode = "view";
 
+// 🚪 Unlock
 function unlock() {
   var entered = document.getElementById("pin").value;
 
-  if (entered === adminPIN) {
-    currentTeam = "admin";
-    alert("ADMIN MODE 🔥 (Full Control)");
-  } 
-  else if (entered === browniePIN) {
-    currentTeam = "brownie";
-    alert("Brownie Team Control 🍫");
-  } 
-  else if (entered === goldenPIN) {
-    currentTeam = "golden";
-    alert("Golden Team Control ⭐");
-  } 
+  if (entered === adminPIN) currentMode = "admin";
+  else if (entered === browniePIN) currentMode = "brownie";
+  else if (entered === goldenPIN) currentMode = "golden";
   else {
     alert("Wrong PIN ❌");
     return;
   }
 
-  localStorage.setItem("team", currentTeam);
-  location.reload();
+  startApp();
 }
 
-// Save mode
-if (localStorage.getItem("team")) {
-  currentTeam = localStorage.getItem("team");
+// 👀 View only
+function viewOnly() {
+  currentMode = "view";
+  startApp();
 }
 
-// Save on change
-function saveMode() {
-  localStorage.setItem("team", currentTeam);
+// 🚀 Start app (NO reload)
+function startApp() {
+  document.getElementById("loginScreen").style.display = "none";
+  document.getElementById("app").style.display = "block";
+  initPlayers();
 }
 
-// PLAYER CREATION
+// 🧑 Players
 function createPlayer(num, team) {
 
   var card = document.createElement("div");
@@ -240,106 +184,8 @@ function createPlayer(num, team) {
     </div>
   `;
 
-  // Hide controls if not allowed
-  if (currentTeam !== team && currentTeam !== "admin") {
-  card.querySelector(".controls").style.display = "none";
-}
-  }
-
-  document.getElementById(team + "Team").appendChild(card);
-
-  db.ref("players/" + num + "/score")
-    .on("value", snap => {
-      document.getElementById("score" + num).innerText = snap.val() || 0;
-    });
-}
-
-// UPDATE FUNCTION
-function update(num, team, val) {
-
-  // ❌ block if not allowed
-  if (currentTeam !== team && currentTeam !== "admin") return;
-
-  var ref = db.ref("players/" + num + "/score");
-
-  ref.once("value").then(snap => {
-    var current = snap.val() || 0;
-    var newScore = current + val;
-
-    if (newScore < 0) newScore = 0;
-
-    ref.set(newScore);
-  });
-}
-
-// Create players (2 per team)
-createPlayer(1, "brownie");
-createPlayer(2, "brownie");
-
-createPlayer(3, "golden");
-createPlayer(4, "golden");
-
-// Save mode after load
-saveMode();
-</script>
-
-</body>
-</html>
-
-var currentTeam = "view"; // default
-
-function unlock() {
-  var entered = document.getElementById("pin").value;
-
-  if (entered === browniePIN) {
-    currentTeam = "brownie";
-    alert("Brownie Team Control 🍫");
-  } else if (entered === goldenPIN) {
-    currentTeam = "golden";
-    alert("Golden Team Control ⭐");
-  } else {
-    alert("Wrong PIN ❌");
-    return;
-  }
-
-  location.reload();
-}
-
-function viewMode() {
-  currentTeam = "view";
-  location.reload();
-}
-
-// Save mode
-if (localStorage.getItem("team")) {
-  currentTeam = localStorage.getItem("team");
-}
-
-// Save on change
-function saveMode() {
-  localStorage.setItem("team", currentTeam);
-}
-
-// PLAYER CREATION
-function createPlayer(num, team) {
-
-  var card = document.createElement("div");
-  card.className = "player-card " + team;
-
-  card.innerHTML = `
-    <h3>Warrior ${num}</h3>
-    <div class="score" id="score${num}">0</div>
-
-    <div class="controls">
-      <button class="add" onclick="update(${num}, '${team}', 1)">+1</button>
-      <button class="add" onclick="update(${num}, '${team}', 10)">+10</button>
-      <button class="add" onclick="update(${num}, '${team}', 100)">+100</button>
-      <button class="minus" onclick="update(${num}, '${team}', -1)">-1</button>
-    </div>
-  `;
-
-  // Hide controls if not allowed
-  if (currentTeam !== team) {
+  // 🎯 Control rules
+  if (currentMode !== team && currentMode !== "admin") {
     card.querySelector(".controls").style.display = "none";
   }
 
@@ -351,10 +197,10 @@ function createPlayer(num, team) {
     });
 }
 
-// UPDATE FUNCTION
+// 🔄 Update
 function update(num, team, val) {
 
-  if (currentTeam !== team) return;
+  if (currentMode !== team && currentMode !== "admin") return;
 
   var ref = db.ref("players/" + num + "/score");
 
@@ -368,15 +214,17 @@ function update(num, team, val) {
   });
 }
 
-// Create players (2 per team)
-createPlayer(1, "brownie");
-createPlayer(2, "brownie");
+// 🚀 Init
+function initPlayers() {
+  document.getElementById("brownieTeam").innerHTML = "";
+  document.getElementById("goldenTeam").innerHTML = "";
 
-createPlayer(3, "golden");
-createPlayer(4, "golden");
+  createPlayer(1, "brownie");
+  createPlayer(2, "brownie");
 
-// Save mode after load
-saveMode();
+  createPlayer(3, "golden");
+  createPlayer(4, "golden");
+}
 </script>
 
 </body>
