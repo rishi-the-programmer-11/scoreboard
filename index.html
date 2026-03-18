@@ -24,10 +24,41 @@
       margin: auto;
     }
 
+    /* 🍩 Brownie Theme */
+    .brownie-card {
+      background: linear-gradient(145deg, #3b2f2f, #5a3e36);
+      border: 2px solid #8b5a2b;
+      animation: brownieGlow 2s infinite alternate;
+    }
+
+    @keyframes brownieGlow {
+      from { box-shadow: 0 0 10px rgba(139,90,43,0.5); }
+      to { box-shadow: 0 0 25px rgba(139,90,43,1); }
+    }
+
+    /* ⭐ Golden Theme */
+    .golden-card {
+      background: linear-gradient(270deg, gold, #ffd700, #ffb700, gold);
+      background-size: 600% 600%;
+      color: black;
+      border: 2px solid gold;
+      animation: goldShimmer 4s ease infinite;
+    }
+
+    @keyframes goldShimmer {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
     .player-card {
-      background: #1e2a38;
       padding: 20px;
       border-radius: 15px;
+      transition: 0.2s;
+    }
+
+    .player-card:hover {
+      transform: scale(1.05);
     }
 
     .score {
@@ -50,6 +81,13 @@
       padding: 10px;
       font-size: 16px;
     }
+
+    .brownie-title { color: #d2a679; }
+    .golden-title { color: gold; }
+
+    img {
+      margin-bottom: 10px;
+    }
   </style>
 </head>
 
@@ -67,15 +105,24 @@
 
 <!-- APP -->
 <div id="app" class="hidden">
-  <h2>Brownie Rainbow Sprinkle Dojo Points</h2>
-  <div id="players" class="container"></div>
+
+  <button onclick="logout()">🚪 Logout</button>
+
+  <h2 class="golden-title">⭐ Golden Glitter Star</h2>
+  <img src="https://cdn-icons-png.flaticon.com/512/1828/1828884.png" width="80">
+  <div id="goldenTeam" class="container"></div>
+
+  <h2 class="brownie-title">🍩 Brownie Rainbow Sprinkle Dojo Points</h2>
+  <img src="https://cdn-icons-png.flaticon.com/512/1046/1046784.png" width="80">
+  <div id="brownieTeam" class="container"></div>
+
 </div>
 
 <script>
 
-//////////////////////////////
-// 🔐 GLOBAL VARIABLES (FIXED)
-//////////////////////////////
+//////////////////////
+// GLOBAL
+//////////////////////
 
 var currentMode = localStorage.getItem("mode") || "view";
 
@@ -83,9 +130,9 @@ var browniePIN = "1111";
 var goldenPIN = "2222";
 var adminPIN = "9999";
 
-//////////////////////////////
-// 🔥 FIREBASE
-//////////////////////////////
+//////////////////////
+// FIREBASE
+//////////////////////
 
 var firebaseConfig = {
   apiKey: "AIzaSyB-pcntG7bT9sm24R0FYiptGai7aBCt7HE",
@@ -96,20 +143,17 @@ var firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 var db = firebase.database();
 
-//////////////////////////////
-// 🔐 LOGIN
-//////////////////////////////
+//////////////////////
+// LOGIN
+//////////////////////
 
 function unlock() {
   var entered = document.getElementById("pin").value.trim();
 
-  if (entered === adminPIN) {
-    currentMode = "admin";
-  } else if (entered === browniePIN) {
-    currentMode = "brownie";
-  } else if (entered === goldenPIN) {
-    currentMode = "golden";
-  } else {
+  if (entered === adminPIN) currentMode = "admin";
+  else if (entered === browniePIN) currentMode = "brownie";
+  else if (entered === goldenPIN) currentMode = "golden";
+  else {
     alert("Wrong PIN ❌");
     return;
   }
@@ -124,28 +168,35 @@ function viewOnly() {
   startApp();
 }
 
-//////////////////////////////
-// 🚀 START APP
-//////////////////////////////
+function logout() {
+  localStorage.removeItem("mode");
+  location.reload();
+}
+
+//////////////////////
+// START
+//////////////////////
 
 function startApp() {
   document.getElementById("loginScreen").classList.add("hidden");
   document.getElementById("app").classList.remove("hidden");
-
   initPlayers();
 }
 
-//////////////////////////////
-// 🧑 CREATE PLAYER
-//////////////////////////////
+//////////////////////
+// CREATE PLAYER
+//////////////////////
 
 function createPlayer(num) {
 
+  // 🔁 swapped teams
+  var team = (num <= 2) ? "golden" : "brownie";
+
   var card = document.createElement("div");
-  card.className = "player-card";
+  card.className = "player-card " + (team === "golden" ? "golden-card" : "brownie-card");
 
   card.innerHTML = `
-    <h3 id="name${num}">Player ${num}</h3>
+    <h3 id="name${num}">${team === "golden" ? "⭐" : "🍩"} Player ${num}</h3>
     <div class="score" id="score${num}">0</div>
 
     <div id="controls${num}">
@@ -156,9 +207,14 @@ function createPlayer(num) {
     </div>
   `;
 
-  document.getElementById("players").appendChild(card);
+  // add to correct section
+  if (team === "golden") {
+    document.getElementById("goldenTeam").appendChild(card);
+  } else {
+    document.getElementById("brownieTeam").appendChild(card);
+  }
 
-  // 🔄 LISTENERS (FIXED)
+  // firebase listeners
   db.ref("players/" + num + "/name").on("value", snap => {
     document.getElementById("name" + num).innerText = snap.val();
   });
@@ -167,19 +223,19 @@ function createPlayer(num) {
     document.getElementById("score" + num).innerText = snap.val();
   });
 
-  // 🔒 PERMISSION CONTROL
+  // permissions
   if (
     currentMode === "view" ||
-    (currentMode === "brownie" && num > 2) ||
-    (currentMode === "golden" && num <= 2)
+    (currentMode === "brownie" && team !== "brownie") ||
+    (currentMode === "golden" && team !== "golden")
   ) {
     document.getElementById("controls" + num).style.display = "none";
   }
 }
 
-//////////////////////////////
-// ➕ UPDATE SCORE
-//////////////////////////////
+//////////////////////
+// UPDATE
+//////////////////////
 
 function update(num, val) {
   if (currentMode === "view") return;
@@ -190,12 +246,13 @@ function update(num, val) {
   });
 }
 
-//////////////////////////////
-// 🎮 INIT PLAYERS
-//////////////////////////////
+//////////////////////
+// INIT
+//////////////////////
 
 function initPlayers() {
-  document.getElementById("players").innerHTML = "";
+  document.getElementById("goldenTeam").innerHTML = "";
+  document.getElementById("brownieTeam").innerHTML = "";
 
   createPlayer(1);
   createPlayer(2);
@@ -203,13 +260,11 @@ function initPlayers() {
   createPlayer(4);
 }
 
-//////////////////////////////
-// 🔁 AUTO LOGIN
-//////////////////////////////
+//////////////////////
+// AUTO LOGIN
+//////////////////////
 
-if (currentMode !== "view") {
-  startApp();
-}
+if (currentMode !== "view") startApp();
 
 </script>
 
