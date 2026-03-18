@@ -3,6 +3,8 @@
 <head>
   <title>Dojo Points</title>
 
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
 
@@ -16,59 +18,118 @@
 
     .hidden { display: none; }
 
+    /* LOGOUT */
+    #logoutBtn {
+      position: fixed;
+      top: 15px;
+      right: 15px;
+      padding: 10px;
+      background: red;
+      color: white;
+      border-radius: 8px;
+      z-index: 1000;
+    }
+
+    /* GRID */
     .container {
       display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 20px;
-      max-width: 800px;
-      margin: auto;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 15px;
+      padding: 10px;
     }
 
-    /* 🍩 Brownie Theme */
-    .brownie-card {
-      background: linear-gradient(145deg, #3b2f2f, #5a3e36);
-      border: 2px solid #8b5a2b;
-      animation: brownieGlow 2s infinite alternate;
-    }
-
-    @keyframes brownieGlow {
-      from { box-shadow: 0 0 10px rgba(139,90,43,0.5); }
-      to { box-shadow: 0 0 25px rgba(139,90,43,1); }
-    }
-
-    /* ⭐ Golden Theme */
-    .golden-card {
-      background: linear-gradient(270deg, gold, #ffd700, #ffb700, gold);
-      background-size: 600% 600%;
-      color: black;
-      border: 2px solid gold;
-      animation: goldShimmer 4s ease infinite;
-    }
-
-    @keyframes goldShimmer {
-      0% { background-position: 0% 50%; }
-      50% { background-position: 100% 50%; }
-      100% { background-position: 0% 50%; }
-    }
-
+    /* PLAYER */
     .player-card {
-      padding: 20px;
+      padding: 15px;
       border-radius: 15px;
-      transition: 0.2s;
     }
 
-    .player-card:hover {
-      transform: scale(1.05);
+    /* 🍩 BROWNIE */
+    .brownie-section {
+      position: relative;
+      overflow: hidden;
+      background: linear-gradient(270deg, #3b2f2f, #5a3e36, #8b5a2b);
+      background-size: 600% 600%;
+      animation: brownieBG 8s infinite;
+      padding: 20px;
+      margin: 15px;
+      border-radius: 20px;
     }
+
+    @keyframes brownieBG {
+      0% { background-position: 0% }
+      50% { background-position: 100% }
+      100% { background-position: 0% }
+    }
+
+    /* ⭐ GOLDEN */
+    .golden-section {
+      position: relative;
+      overflow: hidden;
+      background: linear-gradient(270deg, gold, #ffd700, #ffb700);
+      background-size: 600% 600%;
+      animation: goldBG 8s infinite;
+      padding: 20px;
+      margin: 15px;
+      border-radius: 20px;
+      color: black;
+    }
+
+    @keyframes goldBG {
+      0% { background-position: 0% }
+      50% { background-position: 100% }
+      100% { background-position: 0% }
+    }
+
+    /* SPARKLES */
+    .golden-section::after {
+      content: "";
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background-image: radial-gradient(white 2px, transparent 2px);
+      background-size: 50px 50px;
+      animation: sparkle 10s linear infinite;
+      opacity: 0.3;
+    }
+
+    @keyframes sparkle {
+      from { background-position: 0 0; }
+      to { background-position: 200px 200px; }
+    }
+
+    /* SPRINKLES */
+    .brownie-section::after {
+      content: "";
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background-image:
+        radial-gradient(pink 2px, transparent 2px),
+        radial-gradient(cyan 2px, transparent 2px),
+        radial-gradient(yellow 2px, transparent 2px);
+      background-size: 40px 40px, 60px 60px, 80px 80px;
+      animation: sprinkle 12s linear infinite;
+      opacity: 0.4;
+    }
+
+    @keyframes sprinkle {
+      from { background-position: 0 0, 0 0, 0 0; }
+      to { background-position: 200px 200px, -200px 200px, 200px -200px; }
+    }
+
+    /* TEXT */
+    h1 { font-size: clamp(24px,5vw,40px); }
+    h2 { font-size: clamp(18px,4vw,28px); }
 
     .score {
-      font-size: 40px;
-      margin: 10px;
+      font-size: clamp(30px,6vw,50px);
     }
 
+    /* BUTTONS */
     button {
       padding: 8px;
-      margin: 5px;
+      margin: 4px;
       border: none;
       border-radius: 6px;
       cursor: pointer;
@@ -77,17 +138,6 @@
     .add { background: green; color: white; }
     .minus { background: red; color: white; }
 
-    input {
-      padding: 10px;
-      font-size: 16px;
-    }
-
-    .brownie-title { color: #d2a679; }
-    .golden-title { color: gold; }
-
-    img {
-      margin-bottom: 10px;
-    }
   </style>
 </head>
 
@@ -106,36 +156,32 @@
 <!-- APP -->
 <div id="app" class="hidden">
 
-  <button onclick="logout()">🚪 Logout</button>
+  <button id="logoutBtn" onclick="logout()">🚪 Logout</button>
 
-  <h2 class="golden-title">⭐ Golden Glitter Star</h2>
-  <img src="https://cdn-icons-png.flaticon.com/512/1828/1828884.png" width="80">
-  <div id="goldenTeam" class="container"></div>
+  <div class="golden-section">
+    <h2>⭐ Golden Glitter Star</h2>
+    <div id="goldenTeam" class="container"></div>
+  </div>
 
-  <h2 class="brownie-title">🍩 Brownie Rainbow Sprinkle Dojo Points</h2>
-  <img src="https://cdn-icons-png.flaticon.com/512/1046/1046784.png" width="80">
-  <div id="brownieTeam" class="container"></div>
+  <div class="brownie-section">
+    <h2>🍩 Brownie Rainbow Sprinkle Dojo Points</h2>
+    <div id="brownieTeam" class="container"></div>
+  </div>
 
 </div>
 
 <script>
 
-//////////////////////
 // GLOBAL
-//////////////////////
-
 var currentMode = localStorage.getItem("mode") || "view";
 
 var browniePIN = "1111";
 var goldenPIN = "2222";
 var adminPIN = "9999";
 
-//////////////////////
 // FIREBASE
-//////////////////////
-
 var firebaseConfig = {
-  apiKey: "AIzaSyB-pcntG7bT9sm24R0FYiptGai7aBCt7HE",
+  apiKey: "AIzaSyB...",
   authDomain: "live-broard.firebaseapp.com",
   databaseURL: "https://live-broard-default-rtdb.asia-southeast1.firebasedatabase.app",
 };
@@ -143,20 +189,14 @@ var firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 var db = firebase.database();
 
-//////////////////////
 // LOGIN
-//////////////////////
-
 function unlock() {
   var entered = document.getElementById("pin").value.trim();
 
   if (entered === adminPIN) currentMode = "admin";
   else if (entered === browniePIN) currentMode = "brownie";
   else if (entered === goldenPIN) currentMode = "golden";
-  else {
-    alert("Wrong PIN ❌");
-    return;
-  }
+  else { alert("Wrong PIN ❌"); return; }
 
   localStorage.setItem("mode", currentMode);
   startApp();
@@ -173,57 +213,47 @@ function logout() {
   location.reload();
 }
 
-//////////////////////
 // START
-//////////////////////
-
 function startApp() {
   document.getElementById("loginScreen").classList.add("hidden");
   document.getElementById("app").classList.remove("hidden");
   initPlayers();
 }
 
-//////////////////////
 // CREATE PLAYER
-//////////////////////
-
 function createPlayer(num) {
 
-  // 🔁 swapped teams
   var team = (num <= 2) ? "golden" : "brownie";
 
   var card = document.createElement("div");
-  card.className = "player-card " + (team === "golden" ? "golden-card" : "brownie-card");
+  card.className = "player-card";
 
   card.innerHTML = `
-    <h3 id="name${num}">${team === "golden" ? "⭐" : "🍩"} Player ${num}</h3>
+    <h3 id="name${num}">Player ${num}</h3>
     <div class="score" id="score${num}">0</div>
 
     <div id="controls${num}">
-      <button class="add" onclick="update(${num}, 1)">+1</button>
-      <button class="add" onclick="update(${num}, 10)">+10</button>
-      <button class="add" onclick="update(${num}, 100)">+100</button>
-      <button class="minus" onclick="update(${num}, -1)">-1</button>
+      <button class="add" onclick="update(${num},1)">+1</button>
+      <button class="add" onclick="update(${num},10)">+10</button>
+      <button class="minus" onclick="update(${num},-1)">-1</button>
+      <button class="minus" onclick="update(${num},-10)">-10</button>
     </div>
   `;
 
-  // add to correct section
   if (team === "golden") {
     document.getElementById("goldenTeam").appendChild(card);
   } else {
     document.getElementById("brownieTeam").appendChild(card);
   }
 
-  // firebase listeners
-  db.ref("players/" + num + "/name").on("value", snap => {
-    document.getElementById("name" + num).innerText = snap.val();
+  db.ref("players/" + num + "/name").on("value", s => {
+    document.getElementById("name" + num).innerText = s.val();
   });
 
-  db.ref("players/" + num + "/score").on("value", snap => {
-    document.getElementById("score" + num).innerText = snap.val();
+  db.ref("players/" + num + "/score").on("value", s => {
+    document.getElementById("score" + num).innerText = s.val();
   });
 
-  // permissions
   if (
     currentMode === "view" ||
     (currentMode === "brownie" && team !== "brownie") ||
@@ -233,37 +263,24 @@ function createPlayer(num) {
   }
 }
 
-//////////////////////
 // UPDATE
-//////////////////////
-
 function update(num, val) {
   if (currentMode === "view") return;
 
-  db.ref("players/" + num + "/score").once("value").then(snap => {
-    let current = snap.val() || 0;
-    db.ref("players/" + num + "/score").set(current + val);
+  db.ref("players/" + num + "/score").once("value").then(s => {
+    db.ref("players/" + num + "/score").set((s.val() || 0) + val);
   });
 }
 
-//////////////////////
 // INIT
-//////////////////////
-
 function initPlayers() {
   document.getElementById("goldenTeam").innerHTML = "";
   document.getElementById("brownieTeam").innerHTML = "";
 
-  createPlayer(1);
-  createPlayer(2);
-  createPlayer(3);
-  createPlayer(4);
+  for (let i = 1; i <= 4; i++) createPlayer(i);
 }
 
-//////////////////////
 // AUTO LOGIN
-//////////////////////
-
 if (currentMode !== "view") startApp();
 
 </script>
