@@ -177,6 +177,24 @@ function createPlayer(num, team) {
     </div>
   `;
 
+  if (currentMode !== team && currentMode !== "admin") {
+    card.querySelector(".controls").style.display = "none";
+  }
+
+  document.getElementById(team + "Team").appendChild(card);
+
+  // 🟢 Score
+  db.ref("players/" + num + "/score")
+    .on("value", snap => {
+      document.getElementById("score" + num).innerText = snap.val() || 0;
+    });
+
+  // 🔵 Name
+  db.ref("players/" + num + "/name")
+    .on("value", snap => {
+      document.getElementById("name" + num).innerText = snap.val() || "Player " + num;
+    });
+}
   // 🎯 CONTROL RULES
   if (currentMode !== team && currentMode !== "admin") {
     card.querySelector(".controls").style.display = "none";
