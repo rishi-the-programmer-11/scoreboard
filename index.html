@@ -130,26 +130,34 @@ var browniePIN = "1111";
 var goldenPIN = "2222";
 var adminPIN = "9999";
 
-var currentMode = "view";
+var currentMode = localStorage.getItem("mode") || "view";
 
 // 🚪 LOGIN
 function unlock() {
-  var entered = document.getElementById("pin").value;
+  var entered = document.getElementById("pin").value.trim();
 
-  if (entered === adminPIN) currentMode = "admin";
-  else if (entered === browniePIN) currentMode = "brownie";
-  else if (entered === goldenPIN) currentMode = "golden";
-  else {
+  if (entered === adminPIN) {
+    currentMode = "admin";
+  } else if (entered === browniePIN) {
+    currentMode = "brownie";
+  } else if (entered === goldenPIN) {
+    currentMode = "golden";
+  } else {
     alert("Wrong PIN ❌");
     return;
   }
+
+  // ✅ SAVE MODE
+  localStorage.setItem("mode", currentMode);
 
   startApp();
 }
 
 function viewOnly() {
   currentMode = "view";
+  localStorage.setItem("mode", currentMode);
   startApp();
+
 }
 
 // 🚀 START APP
