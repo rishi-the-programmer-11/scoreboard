@@ -17,7 +17,7 @@
 
     h1 { margin-top: 20px; }
 
-    /* 🔐 PIN SCREEN */
+    /* 🔐 LOGIN */
     #loginScreen {
       height: 100vh;
       display: flex;
@@ -29,7 +29,6 @@
       background: #1e2a38;
       padding: 30px;
       border-radius: 15px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
     }
 
     input {
@@ -40,20 +39,18 @@
     }
 
     button {
-      padding: 10px 15px;
-      border: none;
+      padding: 10px;
       border-radius: 8px;
+      border: none;
       cursor: pointer;
       margin: 5px;
     }
 
-    .enter { background: #28a745; color: white; }
+    .enter { background: green; color: white; }
     .view { background: gray; color: white; }
 
-    /* 🏆 SCOREBOARD */
-    #app {
-      display: none;
-    }
+    /* 🏆 APP */
+    #app { display: none; }
 
     .team-title {
       margin-top: 25px;
@@ -91,13 +88,12 @@
 
     .add { background: green; color: white; }
     .minus { background: red; color: white; }
-
   </style>
 </head>
 
 <body>
 
-<!-- 🔐 LOGIN SCREEN -->
+<!-- 🔐 LOGIN -->
 <div id="loginScreen">
   <div class="login-box">
     <h2>Enter PIN</h2>
@@ -109,7 +105,6 @@
 
 <!-- 🏆 APP -->
 <div id="app">
-
   <h1>🏆 DOJO SCOREBOARD</h1>
 
   <h2 class="team-title">🍫 Brownie Rainbow Sprinkle Dojo Points</h2>
@@ -117,15 +112,14 @@
 
   <h2 class="team-title">⭐ Golden Glitter Star</h2>
   <div class="container" id="goldenTeam"></div>
-
 </div>
 
 <script>
-// 🔥 Firebase
+// 🔥 FIREBASE CONFIG (PUT YOURS HERE)
 var firebaseConfig = {
-  apiKey: "AIzaSyB-pcntG7bT9sm24R0FYiptGai7aBCt7HE",
-  authDomain: "live-broard.firebaseapp.com",
-  databaseURL: "https://live-broard-default-rtdb.asia-southeast1.firebasedatabase.app"
+  apiKey: "YOUR_KEY",
+  authDomain: "YOUR_PROJECT.firebaseapp.com",
+  databaseURL: "YOUR_DB_URL"
 };
 
 firebase.initializeApp(firebaseConfig);
@@ -138,7 +132,7 @@ var adminPIN = "9999";
 
 var currentMode = "view";
 
-// 🚪 Unlock
+// 🚪 LOGIN
 function unlock() {
   var entered = document.getElementById("pin").value;
 
@@ -153,27 +147,26 @@ function unlock() {
   startApp();
 }
 
-// 👀 View only
 function viewOnly() {
   currentMode = "view";
   startApp();
 }
 
-// 🚀 Start app (NO reload)
+// 🚀 START APP
 function startApp() {
   document.getElementById("loginScreen").style.display = "none";
   document.getElementById("app").style.display = "block";
   initPlayers();
 }
 
-// 🧑 Players
+// 🧑 CREATE PLAYER
 function createPlayer(num, team) {
 
   var card = document.createElement("div");
   card.className = "player-card " + team;
 
   card.innerHTML = `
-    <h3>Warrior ${num}</h3>
+    <h3 id="name${num}">Player ${num}</h3>
     <div class="score" id="score${num}">0</div>
 
     <div class="controls">
@@ -184,20 +177,27 @@ function createPlayer(num, team) {
     </div>
   `;
 
-  // 🎯 Control rules
+  // 🎯 CONTROL RULES
   if (currentMode !== team && currentMode !== "admin") {
     card.querySelector(".controls").style.display = "none";
   }
 
   document.getElementById(team + "Team").appendChild(card);
 
+  // 🟢 SCORE LISTENER
   db.ref("players/" + num + "/score")
     .on("value", snap => {
       document.getElementById("score" + num).innerText = snap.val() || 0;
     });
+
+  // 🔵 NAME LISTENER
+  db.ref("players/" + num + "/name")
+    .on("value", snap => {
+      document.getElementById("name" + num).innerText = snap.val() || "Player " + num;
+    });
 }
 
-// 🔄 Update
+// 🔄 UPDATE SCORE
 function update(num, team, val) {
 
   if (currentMode !== team && currentMode !== "admin") return;
@@ -214,7 +214,7 @@ function update(num, team, val) {
   });
 }
 
-// 🚀 Init
+// 🚀 INIT
 function initPlayers() {
   document.getElementById("brownieTeam").innerHTML = "";
   document.getElementById("goldenTeam").innerHTML = "";
