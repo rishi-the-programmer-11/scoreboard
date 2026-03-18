@@ -1,17 +1,19 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Brownie Points</title>
-  <link rel="icon" href="https://raw.githubusercontent.com/rishi-the-programmer-11/scoreboard/main/favicon.png">
-  <link rel="shortcut icon" href="./favicon.png">
-  <link rel="apple-touch-icon" href="./favicon.png">
+  <title>Dojo Points</title>
+
+  <!-- ✅ FAVICON -->
+  <link rel="icon" href="https://raw.githubusercontent.com/rishi-the-programmer-11/scoreboard/main/favicon.png?v=2">
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+  <!-- FIREBASE -->
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
 
   <style>
+
     body {
       font-family: Arial;
       background: linear-gradient(to right, #141e30, #243b55);
@@ -41,86 +43,97 @@
       padding: 10px;
     }
 
-    /* PLAYER */
     .player-card {
       padding: 15px;
       border-radius: 15px;
+      background: rgba(0,0,0,0.3);
     }
 
     /* ⭐ GOLDEN TEAM */
-.golden-section {
-  position: relative;
-  overflow: hidden;
-  padding: 20px;
-  margin: 15px;
-  border-radius: 20px;
-  color: black;
+    .golden-section {
+      position: relative;
+      overflow: hidden;
+      padding: 20px;
+      margin: 15px;
+      border-radius: 20px;
+      color: black;
 
-  background: linear-gradient(270deg, #ffd700, #ffb700, #fff2a8, #ffd700);
-  background-size: 400% 400%;
-  animation: goldFlow 6s ease infinite;
-}
+      background: linear-gradient(270deg, #ffd700, #ffb700, #fff2a8, #ffd700);
+      background-size: 400% 400%;
+      animation: goldFlow 6s ease infinite;
+    }
 
-/* 🍩 BROWNIE TEAM */
-.brownie-section {
-  position: relative;
-  overflow: hidden;
-  padding: 20px;
-  margin: 15px;
-  border-radius: 20px;
+    /* 🍩 BROWNIE TEAM */
+    .brownie-section {
+      position: relative;
+      overflow: hidden;
+      padding: 20px;
+      margin: 15px;
+      border-radius: 20px;
 
-  background: linear-gradient(270deg, #3b2f2f, #5a3e36, #8b5a2b, #3b2f2f);
-  background-size: 400% 400%;
-  animation: brownieFlow 6s ease infinite;
-}
+      background: linear-gradient(270deg, #3b2f2f, #5a3e36, #8b5a2b, #3b2f2f);
+      background-size: 400% 400%;
+      animation: brownieFlow 6s ease infinite;
+    }
 
-/* 🌊 SMOOTH GRADIENT ANIMATION */
-@keyframes goldFlow {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
-}
+    /* 🌊 GRADIENT ANIMATION */
+    @keyframes goldFlow {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
 
-@keyframes brownieFlow {
-  0% { background-position: 100% 50%; }
-  50% { background-position: 0% 50%; }
-  100% { background-position: 100% 50%; }
-}
+    @keyframes brownieFlow {
+      0% { background-position: 100% 50%; }
+      50% { background-position: 0% 50%; }
+      100% { background-position: 100% 50%; }
+    }
 
-   /* ⭐ GOLD SPARKLES */
-.golden-section::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background-image: radial-gradient(white 2px, transparent 2px);
-  background-size: 40px 40px;
-  animation: sparkleMove 10s linear infinite;
-  opacity: 0.25;
-}
+    /* ✨ PARTICLES */
+    .golden-section::after,
+    .brownie-section::after {
+      pointer-events: none; /* 🔥 FIX BUTTONS */
+      z-index: 0;
+    }
 
-/* 🍩 SPRINKLES */
-.brownie-section::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background-image:
-    radial-gradient(pink 2px, transparent 2px),
-    radial-gradient(cyan 2px, transparent 2px),
-    radial-gradient(yellow 2px, transparent 2px);
-  background-size: 40px 40px, 60px 60px, 80px 80px;
-  animation: sprinkleMove 12s linear infinite;
-  opacity: 0.3;
-}
+    .golden-section::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background-image: radial-gradient(white 2px, transparent 2px);
+      background-size: 40px 40px;
+      animation: sparkleMove 10s linear infinite;
+      opacity: 0.25;
+    }
 
-@keyframes sparkleMove {
-  from { background-position: 0 0; }
-  to { background-position: 200px 200px; }
-}
+    .brownie-section::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background-image:
+        radial-gradient(pink 2px, transparent 2px),
+        radial-gradient(cyan 2px, transparent 2px),
+        radial-gradient(yellow 2px, transparent 2px);
+      background-size: 40px 40px, 60px 60px, 80px 80px;
+      animation: sprinkleMove 12s linear infinite;
+      opacity: 0.3;
+    }
 
-@keyframes sprinkleMove {
-  from { background-position: 0 0, 0 0, 0 0; }
-  to { background-position: 200px 200px, -200px 200px, 200px -200px; }
-}
+    .golden-section > *,
+    .brownie-section > * {
+      position: relative;
+      z-index: 2;
+    }
+
+    @keyframes sparkleMove {
+      from { background-position: 0 0; }
+      to { background-position: 200px 200px; }
+    }
+
+    @keyframes sprinkleMove {
+      from { background-position: 0 0, 0 0, 0 0; }
+      to { background-position: 200px 200px, -200px 200px, 200px -200px; }
+    }
 
     /* TEXT */
     h1 { font-size: clamp(24px,5vw,40px); }
@@ -176,9 +189,10 @@
 
 <script>
 
-// GLOBAL
+// MODE
 var currentMode = localStorage.getItem("mode") || "view";
 
+// PINS
 var browniePIN = "1234";
 var goldenPIN = "1115";
 var adminPIN = "1212";
@@ -251,11 +265,11 @@ function createPlayer(num) {
   }
 
   db.ref("players/" + num + "/name").on("value", s => {
-    document.getElementById("name" + num).innerText = s.val();
+    document.getElementById("name" + num).innerText = s.val() || ("Player " + num);
   });
 
   db.ref("players/" + num + "/score").on("value", s => {
-    document.getElementById("score" + num).innerText = s.val();
+    document.getElementById("score" + num).innerText = s.val() || 0;
   });
 
   if (
